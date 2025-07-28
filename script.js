@@ -125,15 +125,55 @@ function playGame(cards) {
     playerTurn = 1;
     numOfCardsFlipped = 0;
 
-    for (let i = 0; i < cards.length; i++) {
+    firstChoice = null;
+    seccondChoice = null;
 
+    lockGame = false;
+
+    for (let i = 0; i < cards.length; i++) {
         cards[i].addEventListener('click', function () {
+            if (lockGame) return;
+
             const clickedCard = cards[i]
-            console.log(clickedCard.matchPair);
             clickedCard.textContent = clickedCard.matchPair;
 
-        });
+            numOfCardsFlipped++;
+            console.log(numOfCardsFlipped);
 
+            if (numOfCardsFlipped == 1) {
+                firstChoice = clickedCard;
+                console.log(firstChoice.matchPair);
+            } else if (numOfCardsFlipped == 2) {
+                seccondChoice = clickedCard;
+                console.log(seccondChoice.matchPair);
+
+            }
+
+            if (numOfCardsFlipped == 2) {
+                if (firstChoice.matchPair != seccondChoice.matchPair) {
+                    firstChoice.style.backgroundColor = "red";
+                    seccondChoice.style.backgroundColor = "red";
+                    lockGame = true;
+                    setTimeout(() => {
+                        firstChoice.textContent = "";
+                        seccondChoice.textContent = "";
+                        firstChoice.style.backgroundColor = "#f9f9f9";
+                        seccondChoice.style.backgroundColor = "#f9f9f9";
+                        lockGame = false;
+                    }, 1000);
+
+                    //if the cards do match
+                } else {
+                    firstChoice.style.backgroundColor = "green";
+                    seccondChoice.style.backgroundColor = "green";
+                }
+                numOfCardsFlipped = 0;
+
+            }
+
+
+
+        });
 
     }
 }
