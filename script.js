@@ -2,22 +2,11 @@ const userImput = document.getElementById('boardSize');
 
 const gameBoard = document.getElementById('gameboard');
 
+handleChange();
+
 //looks if thers a hcange in the dropdown menu
 userImput.addEventListener('change', handleChange);
 
-//creates initial small grid with the array
-let cards = new Array(6);
-for (i = 0; i < 6; i++) {
-    cards[i] = createNewCard(i);
-}
-
-
-//length of the sides of a gameboard grid
-let length = 3;
-//height if the grid
-let height = 2;
-
-createPairs();
 
 
 function handleChange() {
@@ -28,8 +17,6 @@ function handleChange() {
     resetCards();
 
     if (selectedValue == "small") {
-        console.log("Small");
-
 
         gameBoard.style.gridTemplateColumns = "repeat(3, 1fr)";
         gameBoard.style.maxWidth = "170px";
@@ -41,8 +28,6 @@ function handleChange() {
 
 
     } else if (selectedValue == "medium") {
-        console.log("Medium");
-
 
         gameBoard.style.gridTemplateColumns = "repeat(5, 1fr)";
         gameBoard.style.maxWidth = "280px";
@@ -52,9 +37,8 @@ function handleChange() {
 
         cards = new Array(length * height);
 
-    } else if (selectedValue == "large") {
-        console.log("Large");
 
+    } else if (selectedValue == "large") {
 
         gameBoard.style.gridTemplateColumns = "repeat(7, 1fr)";
         gameBoard.style.maxWidth = "400px";
@@ -70,17 +54,19 @@ function handleChange() {
     for (i = 0; i < length * height; i++) {
         cards[i] = createNewCard(i);
     }
+    createPairs();
+    playGame(cards);
 
-    console.log(cards.size);
 }
 
 function createNewCard(id) {
     const newCard = document.createElement('button');
 
     newCard.className = 'card';
-    newCard.textContent = id;
 
-    newCard.id = "id";
+    newCard.matchPair = null;
+    newCard.id = id;
+    newCard.flipped = false;
 
     gameBoard.appendChild(newCard);
     return newCard;
@@ -94,21 +80,35 @@ function resetCards() {
 
 function createPairs() {
 
+    const emojiArray = ["🐸", "🦄", "👻",
+        "🍕", "🎲", "🧠",
+        "🚀", "🌈", "🦆",
+        "🍄", "🚗", "🐢",
+        "🐓", "🪼", "🍎"];
+
     let totalCards = height * length;
     let numPairs = totalCards / 2;
-    let pairs = Array(numPairs*2);
+    let pairs = Array(numPairs * 2);
 
+    //determines what emojis are in the pairs
     for (i = 0; i < totalCards; i = i + 2) {
-        pairs[i] = i;
-        pairs[i+1] = i;
+        const index = Math.floor(Math.random() * emojiArray.length);
+        const randEmoji = emojiArray[index];
+        emojiArray.splice(index, 1);
+        pairs[i] = randEmoji;
+        pairs[i + 1] = randEmoji;
     }
 
-    console.log(pairs);
+    //puts the emojis in the boxes
+    for (let i = 0; i < cards.length; i++) {
+        const index = Math.floor(Math.random() * pairs.length);
+        const randPair = pairs[index];
+        pairs.splice(index, 1);
+        cards[i].matchPair = randPair;
+    }
+
 
 }
-
-
-
 
 //shuffles an array
 function shuffleArray(arrayToShuffle) {
@@ -119,3 +119,22 @@ function shuffleArray(arrayToShuffle) {
     }
     return array;
 }
+
+function playGame(cards) {
+
+    playerTurn = 1;
+    numOfCardsFlipped = 0;
+
+    for (let i = 0; i < cards.length; i++) {
+
+        cards[i].addEventListener('click', function () {
+            const clickedCard = cards[i]
+            console.log(clickedCard.matchPair);
+            clickedCard.textContent = clickedCard.matchPair;
+
+        });
+
+
+    }
+}
+
