@@ -4,12 +4,20 @@ const gameBoard = document.getElementById('gameboard');
 
 handleChange();
 
+player1Score = 0;
+player2Score = 0;
+updateScore();
+
+
+
+
 //looks if thers a hcange in the dropdown menu
 userImput.addEventListener('change', handleChange);
 
 
 
 function handleChange() {
+    updatePlayerTurn(1);
 
     const selectedValue = userImput.value;
 
@@ -32,8 +40,8 @@ function handleChange() {
         gameBoard.style.gridTemplateColumns = "repeat(5, 1fr)";
         gameBoard.style.maxWidth = "280px";
 
-        length = 6;
-        height = 3;
+        length = 5;
+        height = 4;
 
         cards = new Array(length * height);
 
@@ -44,7 +52,7 @@ function handleChange() {
         gameBoard.style.maxWidth = "400px";
 
         length = 7;
-        height = 4;
+        height = 6;
 
         cards = new Array(length * height);
 
@@ -85,7 +93,10 @@ function createPairs() {
         "🍕", "🎲", "🧠",
         "🚀", "🌈", "🦆",
         "🍄", "🚗", "🐢",
-        "🐓", "🪼", "🍎"];
+        "🐓", "🪼", "🍎",
+        "🍔", "🍉", "🫐",
+        "🎱", "🏀", "🏈",
+        "🔮"];
 
     let totalCards = height * length;
     let numPairs = totalCards / 2;
@@ -123,6 +134,7 @@ function shuffleArray(arrayToShuffle) {
 
 function playGame(cards) {
 
+
     playerTurn = 1;
     numOfCardsFlipped = 0;
 
@@ -134,14 +146,14 @@ function playGame(cards) {
     for (let i = 0; i < cards.length; i++) {
         cards[i].addEventListener('click', function () {
             if (lockGame) return;
-            
+
 
             //takes the clicked cards
             const clickedCard = cards[i]
-            console.log(clickedCard.flipped);
 
             //if thta card has already been clicked, do nothing
-            if(clickedCard.flipped) return;
+            if (clickedCard.flipped) return;
+
 
             //shows the emoji value on the screen
             clickedCard.textContent = clickedCard.matchPair;
@@ -149,7 +161,6 @@ function playGame(cards) {
             //counts how many flipped this turn
             numOfCardsFlipped++;
 
-            console.log(numOfCardsFlipped);
 
             //marks the card as flipped
             clickedCard.flipped = true;
@@ -157,26 +168,30 @@ function playGame(cards) {
             //if its the first move
             if (numOfCardsFlipped == 1) {
                 firstChoice = clickedCard;
-                console.log(firstChoice.matchPair);
 
                 //if its the seccond move
             } else if (numOfCardsFlipped == 2) {
                 seccondChoice = clickedCard;
-                console.log(seccondChoice.matchPair);
 
             }
 
             //if both cards are flipped
             if (numOfCardsFlipped == 2) {
+
                 //if they are not correct
                 if (firstChoice.matchPair != seccondChoice.matchPair) {
-                    firstChoice.style.backgroundColor = "red";
-                    seccondChoice.style.backgroundColor = "red";
+                    firstChoice.style.backgroundColor = "#fc4c66";
+                    seccondChoice.style.backgroundColor = "#fc4c66";
+                    firstChoice.classList.add("shake");
+                    seccondChoice.classList.add("shake");
+
 
                     //makes it so no other cards can be clicked
                     lockGame = true;
 
                     setTimeout(() => {
+                        firstChoice.classList.remove("shake");
+                        seccondChoice.classList.remove("shake");
 
                         //clears the screen
                         firstChoice.textContent = "";
@@ -184,16 +199,62 @@ function playGame(cards) {
                         firstChoice.style.backgroundColor = "#f9f9f9";
                         seccondChoice.style.backgroundColor = "#f9f9f9";
                         lockGame = false;
+                        firstChoice.flipped = false;
+                        seccondChoice.flipped = false;
+
+                        //changes Player Turn
+                        playerTurn = (playerTurn % 2) + 1;
+                        console.log(playerTurn);
+                        updatePlayerTurn(playerTurn);
+
+
                     }, 1000);
 
                     //if the cards do match
                 } else {
-                    firstChoice.style.backgroundColor = "green";
-                    seccondChoice.style.backgroundColor = "green";
+
+
+                    if (playerTurn == 1) {
+                        player1Score++;
+                        firstChoice.style.backgroundColor = "#faf869";
+                        seccondChoice.style.backgroundColor = "#faf869";
+                    } else {
+                        player2Score++;
+                        firstChoice.style.backgroundColor = "#69ddfa";
+                        seccondChoice.style.backgroundColor = "#69ddfa";
+
+                    }
+
+
+
                 }
                 numOfCardsFlipped = 0;
             }
+            updateScore();
         });
     }
 }
 
+
+function updatePlayerTurn(turn) {
+    const turnCard = document.getElementById('playerTurn');
+
+    if (turn == 1) {
+        turnCard.style.backgroundColor = "#fcf67e";
+        turnCard.textContent = "It's Player 1's Turn"
+    } else {
+        turnCard.style.backgroundColor = "#89e3fa";
+        turnCard.textContent = "It's Player 2's Turn"
+    }
+}
+
+function updateScore() {
+
+    const scoreCard1 = document.getElementById('player1Score');
+    scoreCard1.textContent = "Player 1 Score: " + player1Score;
+
+    const scoreCard2 = document.getElementById('player2Score');
+    scoreCard2.textContent = "Player 2 Score: " + player2Score;
+
+
+}
