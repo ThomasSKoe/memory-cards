@@ -18,6 +18,7 @@ userImput.addEventListener('change', handleChange);
 
 function handleChange() {
     updatePlayerTurn(1);
+    reset();
 
     const selectedValue = userImput.value;
 
@@ -256,5 +257,13 @@ function updateScore() {
     const scoreCard2 = document.getElementById('player2Score');
     scoreCard2.textContent = "Player 2 Score: " + player2Score;
 
+
+}
+
+function reset() {
+
+    player1Score = 0;
+    player2Score = 0;
+    updateScore();
 
 }
